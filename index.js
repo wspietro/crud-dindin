@@ -18,6 +18,19 @@ let cursos = [{
 
 ];
 
+// Local Storage ======================================================
+// Salvar Informações no Browser
+const Storage = {
+  get() {
+    return JSON.parse(localStorage.getItem("dindin:cursos")) || []
+
+  },
+  set(cursos) {
+    localStorage.setItem("dindin:cursos", JSON.stringify(cursos)) // Array -> String
+  }
+}
+// =====================================================================
+
 // Função para ler cursos
 function listarCursos() {
 
