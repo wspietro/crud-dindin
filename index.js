@@ -1,23 +1,4 @@
 
-// Criando array de cursos
-
-let cursos = [{
-  id: 0,
-  titulo: 'Investimento para Iniciantes',
-  descricao: 'Esse curso é para seu primeiro contato com Investimentos!',
-  professor: 'Jane Doe',
-  listaAulas: [],
-},
-{
-  id: 1,
-  titulo: 'Investimento Intermediário',
-  descricao: 'Esse curso é para aqueles que já possuem conhecimento na área!',
-  professor: 'Clark Kent',
-  listaAulas: [],
-},
-
-];
-
 // Local Storage ======================================================
 // Salvar Informações no Browser
 const Storage = {
@@ -27,31 +8,121 @@ const Storage = {
   },
   set(cursos) {
     localStorage.setItem("dindin:cursos", JSON.stringify(cursos)) // Array -> String
+    console.log(cursos)
   }
 }
 // =====================================================================
+// Funções de ações (adicionar e remover)
+const Cursos = {
+  all: Storage.get(),
 
-// Função para ler cursos
-function listarCursos() {
-
-  let htmlCursos = "";
-
-  cursos.map((cursos, indice) => {
-    htmlCursos += `
-      <article class="card">
-        <h2>${cursos.titulo}</h2>
-        <p>${cursos.descricao}</p>
-        <p>Professor: ${cursos.professor}</p>
-      </article>
-    `
-  })
-  // selecionando elemento que irá englobar lista
-  let painelCursos = document.querySelector('.painel-cursos');
-  console.log(painelCursos)
-  // Inserindo lista de cursos no html
-  painelCursos.innerHTML = htmlCursos;
-  console.log(cursos)
+  add(curso) {
+    Cursos.all.push(curso)
+    console.log(curso)
+    App.reload()
+  }
 }
+
+// Criar elementos na DOM
+const DOM = {
+  cursosContainer: document.querySelector('.painel-cursos'),
+
+  addCurso(curso, index) {
+    DOM.cursosContainer.innerHTML += DOM.innerHTMLCursos(curso, index)
+  },
+
+  innerHTMLCursos(curso, index) {
+    let htmlCursos = `
+    <article class="card">
+      <h2>${curso.titulo}</h2>
+      <p>${curso.descricao}</p>
+      <p>Professor: ${curso.professor}</p>
+    </article>
+  `
+    return htmlCursos
+  },
+
+  clearCursos() {
+    DOM.cursosContainer.innerHTML = "";
+  }
+}
+
+const Form = {
+  // Buscando valores dos Inputs
+  titulo: document.querySelector('#titulo'),
+  descricao: document.querySelector('#descricao'),
+  professor: document.querySelector('#professor'),
+
+  // Obter valor dos Inputs
+  getValues() {
+    return {
+      titulo: Form.titulo.value,
+      descricao: Form.descricao.value,
+      professor: Form.professor.value
+    }
+  },
+
+  submit(event) {
+    event.preventDefault();
+    const curso = Form.getValues();
+
+
+    Cursos.add(curso);
+  }
+}
+
+
+
+// Funções App: iniciar e recarregar
+
+const App = {
+  init() {
+    Cursos.all.forEach(DOM.addCurso);
+
+    Storage.set(Cursos.all)
+  },
+
+  reload() {
+    DOM.clearCursos();
+    App.init()
+  }
+}
+
+App.init();
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // Função para ler cursos
+// function listarCursos() {
+
+//   let htmlCursos = "";
+
+//   cursos.map((cursos, indice) => {
+//     htmlCursos += `
+//       <article class="card">
+//         <h2>${cursos.titulo}</h2>
+//         <p>${cursos.descricao}</p>
+//         <p>Professor: ${cursos.professor}</p>
+//       </article>
+//     `
+//   })
+//   // selecionando elemento que irá englobar lista
+//   let painelCursos = document.querySelector('.painel-cursos');
+//   console.log(painelCursos)
+//   // Inserindo lista de cursos no html
+//   painelCursos.innerHTML = htmlCursos;
+//   console.log(cursos)
+// }
 
 // Função criar aula
 
@@ -85,49 +156,48 @@ function listarCursos() {
 
 
 
-function adicionarAula(idCurso, linkAula) {
-  let cursoEncontrado = cursos.find(curso => {
-    return curso.id === idCurso
-  })
-  cursoEncontrado.listaAulas.push(linkAula)
-}
+// function adicionarAula(idCurso, linkAula) {
+//   let cursoEncontrado = cursos.find(curso => {
+//     return curso.id === idCurso
+//   })
+//   cursoEncontrado.listaAulas.push(linkAula)
+// }
 
-adicionarAula(0, 'teste')
-console.log(cursos)
-
-
-// Cadastro de curso no HTML
-let btnEnviar = document.querySelector('#btnEnviar');
-
-// Capturar campos formuiluário
-btnEnviar.addEventListener('click', evento => {
-  evento.preventDefault();
-
-  let tituloInput = document.querySelector('#titulo');
-  let descricaoInput = document.querySelector('#descricao');
-  let professorInput = document.querySelector('#professor');
+// adicionarAula(0, 'teste')
+// console.log(cursos)
 
 
-  // Adicionando novo curso ao clicar
-  cursos.push({
-    id: cursos.length,
-    titulo: tituloInput.value,
-    descricao: descricaoInput.value,
-    professor: professorInput.value
-  })
+// // Cadastro de curso no HTML
+// let btnEnviar = document.querySelector('#btnEnviar');
 
-  tituloInput.value = ""
-  descricaoInput.value = ""
-  professorInput.value = ""
+// // Capturar campos formuiluário
+// btnEnviar.addEventListener('click', evento => {
+//   evento.preventDefault();
 
-  // atualizar cursos no html
-  listarCursos();
-})
-
-// atualizar html ao carregar a página
-listarCursos();
+//   let tituloInput = document.querySelector('#titulo');
+//   let descricaoInput = document.querySelector('#descricao');
+//   let professorInput = document.querySelector('#professor');
 
 
+//   // Adicionando novo curso ao clicar
+//   cursos.push({
+//     id: cursos.length,
+//     titulo: tituloInput.value,
+//     descricao: descricaoInput.value,
+//     professor: professorInput.value
+//   })
+
+//   tituloInput.value = ""
+//   descricaoInput.value = ""
+//   professorInput.value = ""
+
+//   // atualizar cursos no html
+//   listarCursos();
+//   Storage.set(cursos)
+// })
+
+// // atualizar html ao carregar a página
+// listarCursos();
 
 
 
